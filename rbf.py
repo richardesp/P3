@@ -542,8 +542,12 @@ def logreg_classification(matriz_r, train_outputs, l2, eta):
         logreg: sklearn.linear_model.LogisticRegression
             Scikit-learn logistic regression model already trained
     """
-    logreg = LogisticRegression(penalty=('l2' if l2 else 'l1'), C=eta).fit(matriz_r,
-                                                                           train_outputs[:, 0])
+
+    # Max_iter must be increased if we use 1 / eta. Verbose must be disabled
+    # https://stackoverflow.com/questions/52670012/convergencewarning-liblinear-failed-to-converge-increase-the-number-of-iterati
+    logreg = LogisticRegression(penalty=('l2' if l2 else 'l1'), C=1 / eta, solver='liblinear', verbose=False).fit(
+        matriz_r,
+        train_outputs[:, 0])
 
     # TODO: Complete the code of the function
     return logreg
