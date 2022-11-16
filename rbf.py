@@ -329,7 +329,11 @@ def read_data(train_file, test_file, outputs):
             Matrix containing the outputs for the test patterns
     """
     # Load a pandas dataframe
+
+    print(train_file)
+
     train_df = pd.read_csv(train_file, header=None)
+
     test_df = pd.read_csv(test_file, header=None)
 
     # Separate inputs and outputs
@@ -507,6 +511,7 @@ def invert_matrix_regression(r_matrix, train_outputs):
     coefficients = np.zeros((train_outputs.shape[1], r_matrix.shape[1]))
 
     r_matrix_pseudo_invert = pinv((np.transpose(r_matrix) @ r_matrix)) @ np.transpose(r_matrix)
+    # sum_diadong = sum_diagon * 10e-6, its like rcon param, for add values into the diagonal
 
     coefficients = r_matrix_pseudo_invert @ train_outputs
 
@@ -548,7 +553,8 @@ def logreg_classification(matriz_r, train_outputs, l2, eta):
 
     # Max_iter must be increased if we use 1 / eta. Verbose must be disabled
     # https://stackoverflow.com/questions/52670012/convergencewarning-liblinear-failed-to-converge-increase-the-number-of-iterati
-    logreg = LogisticRegression(penalty=('l2' if l2 else 'l1'), C=1 / eta, solver='liblinear', verbose=False).fit(
+    logreg = LogisticRegression(penalty=('l2' if l2 else 'l1'), C=1 / eta, solver='liblinear', verbose=False,
+                                max_iter=1000).fit( # Max iter by default to 100
         matriz_r,
         train_outputs[:, 0])
 
