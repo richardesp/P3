@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.model_selection import train_test_split
-from numpy.linalg import inv
+from numpy.linalg import pinv  # IMPORTANT IMPORT
 from sklearn.linear_model import LogisticRegression
 
 
@@ -501,18 +501,21 @@ def invert_matrix_regression(r_matrix, train_outputs):
             For every output, values of the coefficients for each RBF and value 
             of the bias 
     """
-    """
+
+    # IMPORTANT!! WE MUST USE THE PSEUDO INVERSE OF THE R MATRIX CALCULATED VIA NUMPY
+
     coefficients = np.zeros((train_outputs.shape[1], r_matrix.shape[1]))
 
-    r_matrix_pseudo_invert = inv((np.transpose(r_matrix) @ r_matrix)) @ np.transpose(r_matrix)
+    r_matrix_pseudo_invert = pinv((np.transpose(r_matrix) @ r_matrix)) @ np.transpose(r_matrix)
 
     coefficients = r_matrix_pseudo_invert @ train_outputs
-    """
 
     # Calculate the pseudo inverse
-    r_matrix_pseudo_invert = np.linalg.pinv(r_matrix)
+    # r_matrix_pseudo_invert = np.linalg.pinv(r_matrix)
 
-    coefficients = r_matrix_pseudo_invert @ train_outputs
+    # coefficients = r_matrix_pseudo_invert @ train_outputs
+
+    # coefficients = np.linalg.pinv(r_matrix) @ train_outputs
 
     # TODO: Complete the code of the function
     # assert coefficients.shape[0] == train_outputs.shape[1] and coefficients.shape[1] == r_matrix.shape[1]
