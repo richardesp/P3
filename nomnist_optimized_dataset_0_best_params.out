@@ -1,0 +1,11 @@
+>>> CCR MODE <<<
+
+Best seed: 4
+Best learning rate: 0.2106157894736842
+Best c: True
+Best ratio: 0.26789473684210524
+Best regularization: l1
+Best fairness: False
+Best test ccr: 92.67
+
+Command for execute the experiment: python3 rbf.py -t ../datasetsLA3IMC/csv/train_nomnist.csv -T ../datasetsLA3IMC/csv/test_nomnist.csv -e 0.2106157894736842 -c -r 0.26789473684210524   -o 1
