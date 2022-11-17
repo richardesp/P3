@@ -18,6 +18,10 @@ from sklearn.cluster import KMeans
 from sklearn.model_selection import train_test_split
 from numpy.linalg import pinv  # IMPORTANT IMPORT
 from sklearn.linear_model import LogisticRegression
+from scipy.spatial.distance import pdist, squareform
+from fairlearn.metrics import MetricFrame
+from fairlearn.metrics import false_negative_rate
+from fairlearn.metrics import false_positive_rate
 
 
 # TODO Include the rest of parameters...
@@ -260,8 +264,30 @@ def train_rbf(train_file, test_file, classification, ratio_rbf, l2, eta, fairnes
 
         # Fairness evaluation
         if fairness:
-            # TODO Group label (we assume it is in the last column of input data): 
+            # TODO Group label (we assume it is in the last column of input data):
+            train_gender_bin = np.floor(train_inputs[:, -1])
+            test_gender_bin = np.floor(test_inputs[:, -1])
             # 1 women / 0 men
+            train_gender_bin[train_gender_bin == -1] = 0
+            test_gender_bin[test_gender_bin == -1] = 0
+
+            metrics = {
+                'false negative rate': false_negative_rate,
+                'false positive rate': false_positive_rate}
+
+            train_fm = MetricFrame(metrics=metrics,
+                                   y_true=train_outputs,
+                                   y_pred=train_predictions,
+                                   sensitive_features=train_gender_bin)
+
+            train_results['fairnes_metrics'] = train_fm
+
+            test_fm = MetricFrame(metrics=metrics,
+                                  y_true=test_outputs,
+                                  y_pred=test_predictions,
+                                  sensitive_features=test_gender_bin)
+
+            test_results['fairnes_metrics'] = test_fm
 
             # train_results and test results are expected to be a MetricFrame
             return train_results, test_results
@@ -403,10 +429,10 @@ def clustering(classification, train_inputs, train_outputs, num_rbf):
     """
     if classification:
         centroids = init_centroids_classification(train_inputs, train_outputs, num_rbf)
+        kmeans = KMeans(n_clusters=num_rbf, init=centroids, n_init=1, max_iter=500).fit(train_inputs, train_outputs)
     else:
-        centroids = train_test_split(train_inputs, train_outputs, train_size=num_rbf)[0]
+        kmeans = KMeans(n_clusters=num_rbf, init='random', n_init=1, max_iter=500).fit(train_inputs, train_outputs)
 
-    kmeans = KMeans(n_clusters=num_rbf, init=centroids, n_init=1, max_iter=500).fit(train_inputs, train_outputs)
     distances = kmeans.transform(train_inputs)
     centers = kmeans.cluster_centers_
 
@@ -431,6 +457,7 @@ def calculate_radii(centers, num_rbf):
         radii: array, shape (num_rbf,)
             Array with the radius of each RBF
     """
+    """ Classic version
     radii = np.zeros(num_rbf)
 
     for index, center_x in enumerate(centers):
@@ -442,7 +469,9 @@ def calculate_radii(centers, num_rbf):
 
     # TODO: Complete the code of the function
     # squareform pdist
-
+    """
+    center_distances = squareform(pdist(centers, 'euclidean'))
+    radii = sum(center_distances) / (2.0 * (num_rbf - 1))
     return radii
 
 
@@ -471,6 +500,7 @@ def calculate_r_matrix(distances, radii):
             Matrix with the activation of every RBF for every pattern. Moreover
             we include a last column with ones, which is going to act as bias
     """
+    """ Classic version
     r_matrix = np.zeros((distances.shape[0], distances.shape[1] + 1))
 
     for i in range(r_matrix.shape[0]):
@@ -481,6 +511,9 @@ def calculate_r_matrix(distances, radii):
         r_matrix[i, -1] = 1
 
     # TODO: Complete the code of the function
+    """
+    r_matrix = np.exp(-((distances ** 2) / (2 * (np.tile(radii, (distances.shape[0], 1)) ** 2))))
+    r_matrix = np.concatenate((np.ones((distances.shape[0], 1)), r_matrix), axis=1)
     assert r_matrix.shape[0] == distances.shape[0] and r_matrix.shape[1] == distances.shape[1] + 1
     return r_matrix
 
@@ -515,13 +548,6 @@ def invert_matrix_regression(r_matrix, train_outputs):
 
     coefficients = r_matrix_pseudo_invert @ train_outputs
 
-    # Calculate the pseudo inverse
-    # r_matrix_pseudo_invert = np.linalg.pinv(r_matrix)
-
-    # coefficients = r_matrix_pseudo_invert @ train_outputs
-
-    # coefficients = np.linalg.pinv(r_matrix) @ train_outputs
-
     # TODO: Complete the code of the function
     # assert coefficients.shape[0] == train_outputs.shape[1] and coefficients.shape[1] == r_matrix.shape[1]
     return coefficients
@@ -553,8 +579,9 @@ def logreg_classification(matriz_r, train_outputs, l2, eta):
 
     # Max_iter must be increased if we use 1 / eta. Verbose must be disabled
     # https://stackoverflow.com/questions/52670012/convergencewarning-liblinear-failed-to-converge-increase-the-number-of-iterati
-    logreg = LogisticRegression(penalty=('l2' if l2 else 'l1'), C=1 / eta, solver='liblinear', verbose=False,
-                                max_iter=1000).fit( # Max iter by default to 100
+    logreg = LogisticRegression(penalty=('l2' if l2 else 'l1'), C=(1.0 / eta), solver='liblinear', verbose=False,
+                                fit_intercept=False,  # Max iter by default to 100
+                                max_iter=1000).fit(
         matriz_r,
         train_outputs[:, 0])
 
