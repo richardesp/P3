@@ -59,6 +59,18 @@ if execution_mode == "MSE":
                                     best_fairness = fairness
                                     best_seed = current_best_seed
 
+                                    with open(f'{experiment_name}_best_params.out', 'w') as f:
+                                        f.write(">>> MSE MODE <<<\n\n")
+                                        f.write(f"Best seed: {best_seed}\n")
+                                        f.write(f"Best learning rate: {best_learning_rate}\n")
+                                        f.write(f"Best c: {best_c}\n")
+                                        f.write(f"Best ratio: {best_ratio}\n")
+                                        f.write(f"Best regularization: {best_regularization}\n")
+                                        f.write(f"Best fairness: {best_fairness}\n")
+                                        f.write(f"Best test error: {best_test_error}\n\n")
+                                        f.write(
+                                            f"Command for execute the experiment: python3 rbf.py -t {train_dataset_path} -T {test_dataset_path} -e {best_learning_rate} {'-c' if best_c == True else ''} -r {best_ratio} {'-l' if best_regularization == 'l2' else ''} {'-f' if best_fairness == True else ''} -o {outputs}")
+
                                 else:
                                     print(
                                         f"\t>>> 🥉 Current test error: {current_best_seed_test_error} vs {best_test_error}")
@@ -109,6 +121,18 @@ else:  # The same but for CCR
                                     best_regularization = regularization
                                     best_fairness = fairness
                                     best_seed = current_best_seed
+
+                                    with open(f'{experiment_name}_best_params.out', 'w') as f:
+                                        f.write(">>> CCR MODE <<<\n\n")
+                                        f.write(f"Best seed: {best_seed}\n")
+                                        f.write(f"Best learning rate: {best_learning_rate}\n")
+                                        f.write(f"Best c: {best_c}\n")
+                                        f.write(f"Best ratio: {best_ratio}\n")
+                                        f.write(f"Best regularization: {best_regularization}\n")
+                                        f.write(f"Best fairness: {best_fairness}\n")
+                                        f.write(f"Best test ccr: {best_test_ccr}\n\n")
+                                        f.write(
+                                            f"Command for execute the experiment: python3 rbf.py -t {train_dataset_path} -T {test_dataset_path} -e {best_learning_rate} {'-c' if best_c == True else ''} -r {best_ratio} {'-l' if best_regularization == 'l2' else ''} {'-f' if best_fairness == True else ''} -o {outputs}")
 
                                 else:
                                     print(f"\t>>> 🥉 Current test CCR: {current_best_seed_test_ccr} vs {best_test_ccr}")
