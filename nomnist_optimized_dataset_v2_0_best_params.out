@@ -1,0 +1,12 @@
+>>> CCR MODE <<<
+
+Best seed: 2
+Best learning rate: 0.0001
+Best c: True
+Best ratio: 0.01
+Best regularization: l1
+Best fairness: False
+Best test ccr: 81.67
+
+Best radii adjustment heuristic: min_max_distance_between_centers
+Command for execute the experiment: python3 rbf_v2.py -t ../datasetsLA3IMC/csv/train_nomnist.csv -T ../datasetsLA3IMC/csv/test_nomnist.csv -e 0.0001 -c -r 0.01   -o 1 -H min_max_distance_between_centers
