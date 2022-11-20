@@ -23,8 +23,9 @@ ratio_rbf = np.linspace(0.01, 0.99, 20)
 regularizations = np.array(['l1', 'l2'])
 fairness_flag = np.array([False])
 radii_adjustment_heuristic = np.array(
-    ['mean_radii_centroids', 'max_distance_between_centers', 'mean_distance_between_centers',
-     'min_max_distance_between_centers'])
+    ['mean_radii_centroids',
+     'min_max_distance_between_centers'])  # 'max_distance_between_centers', 'mean_distance_between_centers' can be
+# added too
 
 total = len(learning_rates) * len(c_flag) * len(ratio_rbf) * len(regularizations) * len(fairness_flag) * len(
     radii_adjustment_heuristic)
@@ -150,7 +151,7 @@ else:  # The same but for CCR
                                         print(
                                             f"\t>>> 🥉 Current test CCR: {current_best_seed_test_ccr} vs {best_test_ccr}")
 
-                                    bar()
+                                bar()
 
     with open(f'{experiment_name}_best_params.out', 'w') as f:
         f.write(">>> CCR MODE <<<\n\n")

@@ -38,7 +38,7 @@ from fairlearn.metrics import false_positive_rate
               help=u'Ratio of RBFs to be used in the network.')
 @click.option('-l', '--l2', is_flag=True, default=False, show_default=True, required=False,
               help=u'If set, the network will use L2 regularization.')
-@click.option('-e', '--eta', default=0.01, show_default=True, required=False,
+@click.option('-e', '--eta', default=0.00001, show_default=True, required=False,
               help=u'Learning rate.')
 @click.option('-f', '--fairness', is_flag=True, default=False, show_default=True, required=False,
               help=u'If set, the network will use fairness regularization.')
