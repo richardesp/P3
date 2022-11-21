@@ -1,0 +1,12 @@
+>>> MSE MODE <<<
+
+Best seed: 3
+Best learning rate: 0.666666667
+Best c: False
+Best ratio: 0.05
+Best regularization: l2
+Best fairness: False
+Best test error: 0.027187
+
+Best radii adjustment heuristic: max_distance_between_centers
+Command for execute the experiment: python3 rbf_v2.py -t ../datasetsLA3IMC/csv/train_quake.csv -T ../datasetsLA3IMC/csv/test_quake.csv -e 0.666666667  -r 0.05 -l  -o 1 -H max_distance_between_centers

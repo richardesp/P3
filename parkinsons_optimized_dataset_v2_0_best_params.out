@@ -1,0 +1,12 @@
+>>> MSE MODE <<<
+
+Best seed: 4
+Best learning rate: 1e-09
+Best c: False
+Best ratio: 0.15000000000000002
+Best regularization: l1
+Best fairness: False
+Best test error: 0.019187
+
+Best radii adjustment heuristic: mean_radii_centroids
+Command for execute the experiment: python3 rbf_v2.py -t ../datasetsLA3IMC/csv/train_parkinsons.csv -T ../datasetsLA3IMC/csv/test_parkinsons.csv -e 1e-09  -r 0.15000000000000002   -o 2 -H mean_radii_centroids
