@@ -9,7 +9,7 @@ train_dataset_path = f'../datasetsLA3IMC/csv/train_{sys.argv[2]}.csv'
 test_dataset_path = f'../datasetsLA3IMC/csv/test_{sys.argv[2]}.csv'
 experiment_name = f"{sys.argv[2]}_optimized_dataset_v2_{sys.argv[1]}"
 
-execution_mode = "MSE"  # CCR it's available too
+execution_mode = "CCR"  # CCR it's available too
 n_seeds = 5  # Number of seeds used for RBF, this value it's necessary for make the loop for finding the best value
 outputs = 1  # Number of outputs
 # found

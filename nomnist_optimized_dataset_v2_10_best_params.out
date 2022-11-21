@@ -1,0 +1,12 @@
+>>> CCR MODE <<<
+
+Best seed: 5
+Best learning rate: 0.222222223
+Best c: True
+Best ratio: 0.3
+Best regularization: l1
+Best fairness: False
+Best test ccr: 92.67
+
+Best radii adjustment heuristic: mean_radii_centroids
+Command for execute the experiment: python3 rbf_v2.py -t ../datasetsLA3IMC/csv/train_nomnist.csv -T ../datasetsLA3IMC/csv/test_nomnist.csv -e 0.222222223 -c -r 0.3   -o 1 -H mean_radii_centroids
