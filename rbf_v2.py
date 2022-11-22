@@ -366,6 +366,12 @@ def read_data(train_file, test_file, outputs):
 
     test_df = pd.read_csv(test_file, header=None)
 
+    # Remove all the rows where the last column is different from 1
+    """
+    train_df = train_df[train_df.iloc[:, -1] != 0]
+    test_df = test_df[test_df.iloc[:, -1] != 0]
+    """
+
     # Separate inputs and outputs
 
     train_inputs = train_df.iloc[:, :-outputs].values
@@ -373,6 +379,8 @@ def read_data(train_file, test_file, outputs):
 
     test_inputs = test_df.iloc[:, :-outputs].values
     test_outputs = test_df.iloc[:, -outputs:].values
+
+
 
     # TODO Complete the code to read the data
     return train_inputs, train_outputs, test_inputs, test_outputs
