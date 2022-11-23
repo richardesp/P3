@@ -22,6 +22,8 @@ from scipy.spatial.distance import pdist, squareform
 from fairlearn.metrics import MetricFrame
 from fairlearn.metrics import false_negative_rate
 from fairlearn.metrics import false_positive_rate
+from fairlearn.metrics import true_positive_rate
+from fairlearn.metrics import true_negative_rate
 
 
 # TODO Include the rest of parameters...
@@ -73,6 +75,21 @@ def train_rbf_total(radii_adjust_type, train_file, test_file, classification, ra
             test_fn0 = np.empty(5)
             test_fn1 = np.empty(5)
 
+            train_fp0 = np.empty(5)
+            train_fp1 = np.empty(5)
+            test_fp0 = np.empty(5)
+            test_fp1 = np.empty(5)
+
+            train_tp0 = np.empty(5)
+            train_tp1 = np.empty(5)
+            test_tp0 = np.empty(5)
+            test_tp1 = np.empty(5)
+
+            train_tn0 = np.empty(5)
+            train_tn1 = np.empty(5)
+            test_tn0 = np.empty(5)
+            test_tn1 = np.empty(5)
+
         for s in range(1, 6, 1):
             print("-----------")
             print("Seed: %d" % s)
@@ -100,6 +117,21 @@ def train_rbf_total(radii_adjust_type, train_file, test_file, classification, ra
                 test_fn0[s - 1] = test_results["fairnes_metrics"].by_group.to_dict()['false negative rate'][0.0] * 100
                 test_fn1[s - 1] = test_results["fairnes_metrics"].by_group.to_dict()['false negative rate'][1.0] * 100
 
+                train_fp0[s - 1] = train_results["fairnes_metrics"].by_group.to_dict()['false positive rate'][0.0] * 100
+                train_fp1[s - 1] = train_results["fairnes_metrics"].by_group.to_dict()['false positive rate'][1.0] * 100
+                test_fp0[s - 1] = test_results["fairnes_metrics"].by_group.to_dict()['false positive rate'][0.0] * 100
+                test_fp1[s - 1] = test_results["fairnes_metrics"].by_group.to_dict()['false positive rate'][1.0] * 100
+
+                train_tp0[s - 1] = train_results["fairnes_metrics"].by_group.to_dict()['true positive rate'][0.0] * 100
+                train_tp1[s - 1] = train_results["fairnes_metrics"].by_group.to_dict()['true positive rate'][1.0] * 100
+                test_tp0[s - 1] = test_results["fairnes_metrics"].by_group.to_dict()['true positive rate'][0.0] * 100
+                test_tp1[s - 1] = test_results["fairnes_metrics"].by_group.to_dict()['true positive rate'][1.0] * 100
+
+                train_tn0[s - 1] = train_results["fairnes_metrics"].by_group.to_dict()['true negative rate'][0.0] * 100
+                train_tn1[s - 1] = train_results["fairnes_metrics"].by_group.to_dict()['true negative rate'][1.0] * 100
+                test_tn0[s - 1] = test_results["fairnes_metrics"].by_group.to_dict()['true negative rate'][0.0] * 100
+                test_tn1[s - 1] = test_results["fairnes_metrics"].by_group.to_dict()['true negative rate'][1.0] * 100
+
         print("******************")
         print("Summary of results")
         print("******************")
@@ -112,6 +144,19 @@ def train_rbf_total(radii_adjust_type, train_file, test_file, classification, ra
             print("Training FN1: %.2f%% +- %.2f%%" % (np.mean(train_fn1), np.std(train_fn1)))
             print("Test FN0: %.2f%% +- %.2f%%" % (np.mean(test_fn0), np.std(test_fn0)))
             print("Test FN1: %.2f%% +- %.2f%%" % (np.mean(test_fn1), np.std(test_fn1)))
+            print("Training FP0: %.2f%% +- %.2f%%" % (np.mean(train_fp0), np.std(train_fp0)))
+            print("Training FP1: %.2f%% +- %.2f%%" % (np.mean(train_fp1), np.std(train_fp1)))
+            print("Test FP0: %.2f%% +- %.2f%%" % (np.mean(test_fp0), np.std(test_fp0)))
+            print("Test FP1: %.2f%% +- %.2f%%" % (np.mean(test_fp1), np.std(test_fp1)))
+            print("Training TP0: %.2f%% +- %.2f%%" % (np.mean(train_tp0), np.std(train_tp0)))
+            print("Training TP1: %.2f%% +- %.2f%%" % (np.mean(train_tp1), np.std(train_tp1)))
+            print("Test TP0: %.2f%% +- %.2f%%" % (np.mean(test_tp0), np.std(test_tp0)))
+            print("Test TP1: %.2f%% +- %.2f%%" % (np.mean(test_tp1), np.std(test_tp1)))
+            print("Training TN0: %.2f%% +- %.2f%%" % (np.mean(train_tn0), np.std(train_tn0)))
+            print("Training TN1: %.2f%% +- %.2f%%" % (np.mean(train_tn1), np.std(train_tn1)))
+            print("Test TN0: %.2f%% +- %.2f%%" % (np.mean(test_tn0), np.std(test_tn0)))
+            print("Test TN1: %.2f%% +- %.2f%%" % (np.mean(test_tn1), np.std(test_tn1)))
+        print("******************")
 
     else:
         # KAGGLE
@@ -277,7 +322,9 @@ def train_rbf(radii_adjust_type, train_file, test_file, classification, ratio_rb
 
             metrics = {
                 'false negative rate': false_negative_rate,
-                'false positive rate': false_positive_rate}
+                'false positive rate': false_positive_rate,
+                'true negative rate': true_negative_rate,
+                'true positive rate': true_positive_rate}
 
             train_fm = MetricFrame(metrics=metrics,
                                    y_true=train_outputs,
@@ -379,8 +426,6 @@ def read_data(train_file, test_file, outputs):
 
     test_inputs = test_df.iloc[:, :-outputs].values
     test_outputs = test_df.iloc[:, -outputs:].values
-
-
 
     # TODO Complete the code to read the data
     return train_inputs, train_outputs, test_inputs, test_outputs
