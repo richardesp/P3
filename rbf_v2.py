@@ -610,6 +610,8 @@ def logreg_classification(matriz_r, train_outputs, l2, eta):
         matriz_r,
         train_outputs[:, 0])
 
+    print(logreg.coef_) # Cuantos valores son menos a 10e-5
+
     # TODO: Complete the code of the function
     return logreg
 
