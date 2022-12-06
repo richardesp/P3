@@ -15,6 +15,7 @@ import click
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
+from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 from numpy.linalg import pinv  # IMPORTANT IMPORT
 from sklearn.linear_model import LogisticRegression
@@ -24,6 +25,8 @@ from fairlearn.metrics import false_negative_rate
 from fairlearn.metrics import false_positive_rate
 from fairlearn.metrics import true_positive_rate
 from fairlearn.metrics import true_negative_rate
+import matplotlib.pyplot as plt
+from sklearn import metrics
 
 
 # TODO Include the rest of parameters...
@@ -68,6 +71,8 @@ def train_rbf_total(radii_adjust_type, train_file, test_file, classification, ra
         train_ccrs = np.empty(5)
         test_mses = np.empty(5)
         test_ccrs = np.empty(5)
+        train_f1s = np.empty(5)
+        test_f1s = np.empty(5)
 
         if fairness:
             train_fn0 = np.empty(5)
@@ -105,11 +110,15 @@ def train_rbf_total(radii_adjust_type, train_file, test_file, classification, ra
             test_mses[s - 1] = test_results["mse"]
             train_ccrs[s - 1] = train_results["ccr"]
             test_ccrs[s - 1] = test_results["ccr"]
+            train_f1s[s - 1] = train_results["f1"]
+            test_f1s[s - 1] = test_results["f1"]
 
             print("Training MSE: %f" % train_mses[s - 1])
             print("Test MSE: %f" % test_mses[s - 1])
             print("Training CCR: %.2f%%" % train_ccrs[s - 1])
             print("Test CCR: %.2f%%" % test_ccrs[s - 1])
+            print("Training F1: %.2f%%" % train_f1s[s - 1])
+            print("Test F1: %.2f%%" % test_f1s[s - 1])
 
             if fairness:
                 train_fn0[s - 1] = train_results["fairnes_metrics"].by_group.to_dict()['false negative rate'][0.0] * 100
@@ -139,6 +148,8 @@ def train_rbf_total(radii_adjust_type, train_file, test_file, classification, ra
         print("Test MSE: %f +- %f" % (np.mean(test_mses), np.std(test_mses)))
         print("Training CCR: %.2f%% +- %.2f%%" % (np.mean(train_ccrs), np.std(train_ccrs)))
         print("Test CCR: %.2f%% +- %.2f%%" % (np.mean(test_ccrs), np.std(test_ccrs)))
+        print("Training F1: %.2f%% +- %.2f%%" % (np.mean(train_f1s), np.std(train_f1s)))
+        print("Test F1: %.2f%% +- %.2f%%" % (np.mean(test_f1s), np.std(test_f1s)))
         if fairness:
             print("Training FN0: %.2f%% +- %.2f%%" % (np.mean(train_fn0), np.std(train_fn0)))
             print("Training FN1: %.2f%% +- %.2f%%" % (np.mean(train_fn1), np.std(train_fn1)))
@@ -303,13 +314,25 @@ def train_rbf(radii_adjust_type, train_file, test_file, classification, ratio_rb
         #           formatter = dict( float = lambda x: "%.3g" % x ))  # float arrays %.3g	
         # print(np.array_str(logreg.predict_proba(test_r), suppress_small=True))
 
+        """
+        from sklearn import metrics
+
+        confusion_matrix = metrics.confusion_matrix(test_outputs, test_predictions)
+        classes = ['a', 'b', 'c', 'd', 'e', 'f']
+        cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix=confusion_matrix, display_labels=classes)
+        cm_display.plot(cmap=plt.cm.Blues)
+        plt.show()
+        """
+
         train_results = {
             'ccr': train_ccr,
-            'mse': train_mse}
+            'mse': train_mse,
+            'f1': f1_score(train_outputs, train_predictions, average='macro')}
 
         test_results = {
             'ccr': test_ccr,
-            'mse': test_mse}
+            'mse': test_mse,
+            'f1': f1_score(test_outputs, test_predictions, average='macro')}
 
         # Fairness evaluation
         if fairness:
