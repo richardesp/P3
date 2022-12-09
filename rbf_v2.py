@@ -672,9 +672,17 @@ def logreg_classification(matriz_r, train_outputs, l2, eta):
 
     # Max_iter must be increased if we use 1 / eta. Verbose must be disabled
     # https://stackoverflow.com/questions/52670012/convergencewarning-liblinear-failed-to-converge-increase-the-number-of-iterati
+
+    # Stablisingh the weights for unbalanced classes
+    #w_0 = 1900 / (2 * 1418)  # Man
+    #w_1 = 1900 / (2 * 157)  # Woman
+    w_0 = 0.05
+    w_1 = 0.99
+
+
     logreg = LogisticRegression(penalty=('l2' if l2 else 'l1'), C=(1.0 / eta), solver='liblinear', verbose=False,
                                 fit_intercept=False,  # Max iter by default to 100
-                                max_iter=1000).fit(
+                                max_iter=5000, class_weight={0: w_0, 1: w_1}).fit(
         matriz_r,
         train_outputs[:, 0])
 
